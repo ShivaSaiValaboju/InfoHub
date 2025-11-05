@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import API_URL from '../config';
 
 const WeatherModule = () => {
     const [weatherData, setWeatherData] = useState(null);
@@ -24,7 +25,7 @@ const WeatherModule = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch(`http://localhost:3001/api/weather?city=${city}`);
+            const response = await fetch(`${API_URL}/weather?city=${city}`);
             if (!response.ok) throw new Error('Weather data fetch failed');
             const data = await response.json();
             setWeatherData(data);

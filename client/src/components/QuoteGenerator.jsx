@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import API_URL from '../config';
 
 const QuoteGenerator = () => {
     const [quote, setQuote] = useState(null);
@@ -9,7 +10,7 @@ const QuoteGenerator = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch('http://localhost:3001/api/quote');
+            const response = await fetch(`${API_URL}/quote`);
             if (!response.ok) throw new Error('Failed to fetch quote');
             const data = await response.json();
             setQuote(data);

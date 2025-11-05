@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import API_URL from '../config';
 
 const CurrencyConverter = () => {
     const [amount, setAmount] = useState('');
@@ -15,7 +16,7 @@ const CurrencyConverter = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch(`http://localhost:3001/api/currency?amount=${amount}`);
+            const response = await fetch(`${API_URL}/currency?amount=${amount}`);
             if (!response.ok) throw new Error('Currency conversion failed');
             const data = await response.json();
             setConversion(data);
