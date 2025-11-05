@@ -24,7 +24,7 @@ const WeatherModule = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch(`http://localhost:3001/api/weather?city=${city}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/weather?city=${city}`);
             if (!response.ok) throw new Error('Weather data fetch failed');
             const data = await response.json();
             setWeatherData(data);

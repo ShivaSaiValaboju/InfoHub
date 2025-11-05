@@ -15,7 +15,7 @@ const CurrencyConverter = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch(`http://localhost:3001/api/currency?amount=${amount}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/currency?amount=${amount}`);
             if (!response.ok) throw new Error('Currency conversion failed');
             const data = await response.json();
             setConversion(data);

@@ -9,7 +9,7 @@ const QuoteGenerator = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetch('http://localhost:3001/api/quote');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quote`);
             if (!response.ok) throw new Error('Failed to fetch quote');
             const data = await response.json();
             setQuote(data);
