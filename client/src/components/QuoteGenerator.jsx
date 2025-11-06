@@ -9,12 +9,28 @@ const QuoteGenerator = () => {
         try {
             setLoading(true);
             setError(null);
+            console.log('Fetching from:', `${import.meta.env.VITE_API_URL}/api/quote`);
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quote`);
-            if (!response.ok) throw new Error('Failed to fetch quote');
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response:', text);
+                throw new Error('Server returned non-JSON response. The server might be starting up.');
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch quote');
+            }
+            
             const data = await response.json();
+            console.log('Quote data:', data);
             setQuote(data);
         } catch (err) {
-            setError(err.message);
+            console.error('Quote error:', err);
+            setError(err.message || 'Failed to fetch quote. Please try again.');
         } finally {
             setLoading(false);
         }

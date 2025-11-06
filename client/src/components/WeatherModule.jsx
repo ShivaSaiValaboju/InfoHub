@@ -26,16 +26,30 @@ const WeatherModule = () => {
             setError(null);
             console.log('Fetching weather from:', `${import.meta.env.VITE_API_URL}/api/weather?city=${city}`);
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/weather?city=${city}`);
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response:', text);
+                throw new Error('Server returned non-JSON response. The server might be starting up.');
+            }
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Weather data fetch failed');
             }
+            
             const data = await response.json();
             console.log('Weather data received:', data);
             setWeatherData(data);
         } catch (err) {
             console.error('Weather fetch error:', err);
-            setError(err.message || 'Failed to fetch weather data. Please check your connection.');
+            if (err.message.includes('server might be starting up')) {
+                setError('Server is starting up, please wait a moment and try again...');
+            } else {
+                setError(err.message || 'Failed to fetch weather data. Please check your connection.');
+            }
         } finally {
             setLoading(false);
         }

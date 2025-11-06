@@ -1,38 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import WeatherModule from './components/WeatherModule'
 import CurrencyConverter from './components/CurrencyConverter'
 import QuoteGenerator from './components/QuoteGenerator'
-import LoadingOverlay from './components/LoadingOverlay'
-import keepAlive from './utils/keepAlive'
 import './App.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('weather')
-  const [isWakingUp, setIsWakingUp] = useState(false)
-
-  useEffect(() => {
-    const checkServer = async () => {
-      try {
-        setIsWakingUp(true);
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/health`);
-        if (response.ok) {
-          setIsWakingUp(false);
-        }
-      } catch (error) {
-        console.log('Server might be waking up:', error);
-      }
-    };
-
-    // Start the keep-alive pings when the app loads
-    if (import.meta.env.PROD) {  // Only run in production
-      checkServer();
-      keepAlive();
-    }
-  }, [])
 
   return (
     <div className="container">
-      <LoadingOverlay isVisible={isWakingUp} />
       <h1>
         Info<span style={{ color: 'var(--primary-color)' }}>Hub</span>
       </h1>

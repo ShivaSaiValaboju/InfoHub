@@ -13,8 +13,6 @@ app.use(cors({
     credentials: false // Set to false to allow all origins
 }));
 app.use(express.json());
-
-// Health check endpoint for keep-alive pings
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });

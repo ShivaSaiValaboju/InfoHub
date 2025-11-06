@@ -15,12 +15,28 @@ const CurrencyConverter = () => {
         try {
             setLoading(true);
             setError(null);
+            console.log('Fetching from:', `${import.meta.env.VITE_API_URL}/api/currency?amount=${amount}`);
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/currency?amount=${amount}`);
-            if (!response.ok) throw new Error('Currency conversion failed');
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response:', text);
+                throw new Error('Server returned non-JSON response. The server might be starting up.');
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Currency conversion failed');
+            }
+            
             const data = await response.json();
+            console.log('Conversion data:', data);
             setConversion(data);
         } catch (err) {
-            setError(err.message);
+            console.error('Conversion error:', err);
+            setError(err.message || 'Failed to convert currency. Please try again.');
         } finally {
             setLoading(false);
         }
