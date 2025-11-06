@@ -6,13 +6,23 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Configure CORS
+// Configure CORS - allow all origins during development
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-    methods: ['GET', 'POST'],
-    credentials: true
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'OPTIONS'],
+    credentials: false // Set to false to allow all origins
 }));
 app.use(express.json());
+
+// Add error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ 
+        error: 'Something broke!',
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
 
 // Mock quotes data (can be replaced with a real API later)
 const quotes = [
@@ -26,7 +36,10 @@ const quotes = [
 // Weather API endpoint
 app.get('/api/weather', async (req, res) => {
     try {
+        console.log('Weather API called with city:', req.query.city);
         const city = req.query.city || 'London'; // Default city
+        
+        console.log('Using OpenWeather API key:', process.env.OPENWEATHER_API_KEY);
         const response = await axios.get(
             `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`
         );
@@ -37,9 +50,18 @@ app.get('/api/weather', async (req, res) => {
             city: response.data.name
         };
 
+        console.log('Weather data:', weatherData);
         res.json(weatherData);
     } catch (error) {
-        res.status(500).json({ error: 'Could not fetch weather data' });
+        console.error('Weather API error:', error.message);
+        if (error.response) {
+            console.error('Error response:', error.response.data);
+        }
+        res.status(500).json({ 
+            error: 'Could not fetch weather data',
+            message: error.message,
+            details: error.response?.data
+        });
     }
 });
 

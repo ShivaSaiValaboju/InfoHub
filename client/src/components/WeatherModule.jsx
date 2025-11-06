@@ -24,12 +24,18 @@ const WeatherModule = () => {
         try {
             setLoading(true);
             setError(null);
+            console.log('Fetching weather from:', `${import.meta.env.VITE_API_URL}/api/weather?city=${city}`);
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/weather?city=${city}`);
-            if (!response.ok) throw new Error('Weather data fetch failed');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Weather data fetch failed');
+            }
             const data = await response.json();
+            console.log('Weather data received:', data);
             setWeatherData(data);
         } catch (err) {
-            setError(err.message);
+            console.error('Weather fetch error:', err);
+            setError(err.message || 'Failed to fetch weather data. Please check your connection.');
         } finally {
             setLoading(false);
         }
